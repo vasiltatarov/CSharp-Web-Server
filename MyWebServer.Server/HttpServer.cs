@@ -81,6 +81,14 @@ namespace MyWebServer.Server
     </head>
     <body>
         <h1>Hello from my server!</h1>
+        <nav>
+            <ul>
+                <li>Home</li>
+                <li>Services</li>
+                <li>About</li>
+            </ul>
+        </nav>
+        <h1>My Web Server</h1>
     </body>
 </html>";
 

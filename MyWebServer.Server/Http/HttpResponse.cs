@@ -2,8 +2,10 @@
 {
     public class HttpResponse
     {
-        public HttpStatusCode StatusCode { get; set; }
+        public HttpStatusCode StatusCode { get; init; }
 
-        public HttpHeaderCollection Headers { get; set; } = new();
+        public HttpHeaderCollection Headers { get; } = new();
+
+        public string Content { get; init; }
     }
 }
