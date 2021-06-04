@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using MyWebServer.Server.Http;
+using MyWebServer.Server.Routing;
 
 namespace MyWebServer.Server
 {
@@ -13,13 +14,21 @@ namespace MyWebServer.Server
         private readonly int port;
         private readonly TcpListener listener;
 
-        public HttpServer(string ipAddress, int port)
+        public HttpServer(string ipAddress, int port, Action<IRoutingTable> routing)
         {
             this.ipAddress = IPAddress.Parse(ipAddress);
             this.port = port;
 
             listener = new TcpListener(this.ipAddress, port);
         }
+
+        public HttpServer(int port, Action<IRoutingTable> routing)
+            : this("127.0.0.1", port, routing)
+        { }
+
+        public HttpServer(Action<IRoutingTable> routing)
+            : this("127.0.0.1", 5000, routing)
+        { }
 
         public async Task Start()
         {
@@ -38,7 +47,7 @@ namespace MyWebServer.Server
 
                 Console.WriteLine(requestText);
 
-                var request = HttpRequest.Parse(requestText);
+                //var request = HttpRequest.Parse(requestText);
 
                 await WriteResponse(networkStream);
 
@@ -98,8 +107,8 @@ namespace MyWebServer.Server
 HTTP/1.1 200 OK
 Server: My Web Server
 Date: {DateTime.UtcNow}
-Content-Length: {contentLength}
 Content-Type: text/html; charset=UTF-8
+Content-Length: {contentLength}
 
 {content}";
 

@@ -58,21 +58,14 @@ namespace MyWebServer.Server.Http
                     throw new InvalidOperationException("Request is not valid.");
                 }
 
-                var header = new HttpHeader
-                {
-                    Name = headerParts[0],
-                    Value = headerParts[1].Trim(),
-                };
-                headerCollection.Add(header);
+                var headerName = headerParts[0];
+                var headerValue = headerParts[1].Trim();
+
+                headerCollection.Add(headerName, headerValue);
             }
             
             return headerCollection;
         }
-
-        //private static string[] GetStartLine(string request)
-        //{
-
-        //}
 
         private static HttpMethod ParseHttpMethod(string method)
             => method.ToUpper() switch
@@ -83,5 +76,10 @@ namespace MyWebServer.Server.Http
                 "DELETE" => HttpMethod.Delete,
                 _ => throw new InvalidOperationException($"Method '{method}' is not supported.")
             };
+
+        //private static string[] GetStartLine(string request)
+        //{
+
+        //}
     }
 }
