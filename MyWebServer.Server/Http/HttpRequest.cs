@@ -10,7 +10,7 @@ namespace MyWebServer.Server.Http
 
         public HttpMethod Method { get; private set; }
 
-        public string Url { get; private set; }
+        public string Path { get; private set; }
 
         public HttpHeaderCollection Headers { get; private set; }
 
@@ -34,7 +34,7 @@ namespace MyWebServer.Server.Http
             return new HttpRequest
             {
                 Method = method,
-                Url = url,
+                Path = url,
                 Body = body,
                 Headers = headers,
             };

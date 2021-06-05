@@ -2,11 +2,11 @@
 using MyWebServer.Server.Common;
 using MyWebServer.Server.Http;
 
-namespace MyWebServer.Server.Results
+namespace MyWebServer.Server.Responses
 {
-    public class TextResponse : HttpResponse
+    public class ContentResponse : HttpResponse
     {
-        public TextResponse(string text, string contentType)
+        public ContentResponse(string text, string contentType)
             : base(HttpStatusCode.OK)
         {
             Guard.AgainstNull(text, nameof(text));
@@ -17,12 +17,6 @@ namespace MyWebServer.Server.Results
             this.Headers.Add("Content-Length", contentLength);
 
             this.Content = text;
-        }
-
-        public TextResponse(string text)
-            : this(text, "text/plain; charset=UTF-8")
-        {
-
         }
     }
 }
