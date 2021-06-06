@@ -41,29 +41,38 @@ namespace MyWebServer.Server.Http
                 Path = path,
                 Query = query,
                 Headers = headers,
-                Body = body,
+                Body = body
             };
         }
 
-        // /Cats?Name=Vasko&Age=18
+        private static HttpMethod ParseHttpMethod(string method)
+            => method.ToUpper() switch
+            {
+                "GET" => HttpMethod.Get,
+                "POST" => HttpMethod.Post,
+                "PUT" => HttpMethod.Put,
+                "DELETE" => HttpMethod.Delete,
+                _ => throw new InvalidOperationException($"Method '{method}' is not supported."),
+            };
+
         private static (string, Dictionary<string, string>) ParseUrl(string url)
         {
             var urlParts = url.Split('?', 2);
 
             var path = urlParts[0];
-            var queries = urlParts.Length > 1
+            var query = urlParts.Length > 1
                 ? ParseQuery(urlParts[1])
                 : new Dictionary<string, string>();
 
-            return (path, queries);
+            return (path, query);
         }
 
-        private static Dictionary<string, string> ParseQuery(string query)
-            => query.Split('&')
+        private static Dictionary<string, string> ParseQuery(string queryString)
+            => queryString
+                .Split('&')
                 .Select(part => part.Split('='))
                 .Where(part => part.Length == 2)
-                .ToDictionary(p => p[0], p => p[1]);
-
+                .ToDictionary(part => part[0], part => part[1]);
 
         private static HttpHeaderCollection ParseHttpHeaders(IEnumerable<string> headerLines)
         {
@@ -91,15 +100,5 @@ namespace MyWebServer.Server.Http
 
             return headerCollection;
         }
-
-        private static HttpMethod ParseHttpMethod(string method)
-            => method.ToUpper() switch
-            {
-                "GET" => HttpMethod.Get,
-                "POST" => HttpMethod.Post,
-                "PUT" => HttpMethod.Put,
-                "DELETE" => HttpMethod.Delete,
-                _ => throw new InvalidOperationException($"Method '{method}' is not supported.")
-            };
     }
 }
