@@ -22,8 +22,7 @@ namespace MyWebServer.Server
 
             this.listener = new TcpListener(this.ipAddress, port);
 
-            this.routingTable = new RoutingTable();
-            routingTableConfiguration(this.routingTable);
+            routingTableConfiguration(this.routingTable = new RoutingTable());
         }
 
         public HttpServer(int port, Action<IRoutingTable> routing)
@@ -31,7 +30,7 @@ namespace MyWebServer.Server
         { }
 
         public HttpServer(Action<IRoutingTable> routing)
-            : this("127.0.0.1", 5000, routing)
+            : this(5000, routing)
         { }
 
         public async Task Start()
@@ -68,7 +67,7 @@ namespace MyWebServer.Server
 
             var requestBuilder = new StringBuilder();
 
-            while (networkStream.DataAvailable)
+            do
             {
                 var bytesRead = await networkStream.ReadAsync(buffer, 0, bufferLength);
 
@@ -80,7 +79,7 @@ namespace MyWebServer.Server
                 }
 
                 requestBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-            }
+            } while (networkStream.DataAvailable);
 
             return requestBuilder.ToString();
         }

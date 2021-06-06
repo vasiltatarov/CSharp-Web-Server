@@ -12,6 +12,8 @@ namespace MyWebServer.Server.Http
 
         public string Path { get; private set; }
 
+        public Dictionary<string, string> Query { get; private set; }
+
         public HttpHeaderCollection Headers { get; private set; }
 
         public string Body { get; private set; }
@@ -25,6 +27,8 @@ namespace MyWebServer.Server.Http
             var method = ParseHttpMethod(startLine[0]);
             var url = startLine[1];
 
+            var (path, query) = ParseUrl(url);
+
             var headers = ParseHttpHeaders(lines.Skip(1));
 
             var bodyLines = lines.Skip(headers.Count + 2).ToArray();
@@ -34,11 +38,32 @@ namespace MyWebServer.Server.Http
             return new HttpRequest
             {
                 Method = method,
-                Path = url,
-                Body = body,
+                Path = path,
+                Query = query,
                 Headers = headers,
+                Body = body,
             };
         }
+
+        // /Cats?Name=Vasko&Age=18
+        private static (string, Dictionary<string, string>) ParseUrl(string url)
+        {
+            var urlParts = url.Split('?', 2);
+
+            var path = urlParts[0];
+            var queries = urlParts.Length > 1
+                ? ParseQuery(urlParts[1])
+                : new Dictionary<string, string>();
+
+            return (path, queries);
+        }
+
+        private static Dictionary<string, string> ParseQuery(string query)
+            => query.Split('&')
+                .Select(part => part.Split('='))
+                .Where(part => part.Length == 2)
+                .ToDictionary(p => p[0], p => p[1]);
+
 
         private static HttpHeaderCollection ParseHttpHeaders(IEnumerable<string> headerLines)
         {
@@ -63,7 +88,7 @@ namespace MyWebServer.Server.Http
 
                 headerCollection.Add(headerName, headerValue);
             }
-            
+
             return headerCollection;
         }
 
@@ -76,10 +101,5 @@ namespace MyWebServer.Server.Http
                 "DELETE" => HttpMethod.Delete,
                 _ => throw new InvalidOperationException($"Method '{method}' is not supported.")
             };
-
-        //private static string[] GetStartLine(string request)
-        //{
-
-        //}
     }
 }
