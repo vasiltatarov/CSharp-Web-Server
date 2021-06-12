@@ -1,4 +1,5 @@
-﻿using MyWebServer.Server.Http;
+﻿using System.Runtime.CompilerServices;
+using MyWebServer.Server.Http;
 using MyWebServer.Server.Responses;
 
 namespace MyWebServer.Server.Controllers
@@ -18,5 +19,11 @@ namespace MyWebServer.Server.Controllers
 
         protected HttpResponse Redirect(string location)
             => new RedirectResponse(location);
+
+        protected HttpResponse View([CallerMemberName] string viewName = "")
+            => new ViewResponse(viewName, this.GetType().GetControllerName(), null);
+
+        protected HttpResponse View(string viewName, object model)
+            => new ViewResponse(viewName, this.GetType().GetControllerName(), model);
     }
 }
