@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
+using MyWebServer.Server.Common;
 
 namespace MyWebServer.Server.Http
 {
@@ -9,22 +11,40 @@ namespace MyWebServer.Server.Http
         {
             this.StatusCode = statusCode;
 
-            this.Headers.Add("Server", "My Web Server");
-            this.Headers.Add("Date", $"{DateTime.UtcNow:r}");
+            this.AddHeader("Server", "My Web Server");
+            this.AddHeader("Date", $"{DateTime.UtcNow:r}");
         }
 
         public HttpStatusCode StatusCode { get; protected set; }
 
-        public HttpHeaderCollection Headers { get; } = new();
+        public IDictionary<string, HttpHeader> Headers { get; } = new Dictionary<string, HttpHeader>();
+
+        public IDictionary<string, HttpCookie> Cookies = new Dictionary<string, HttpCookie>();
 
         public string Content { get; protected set; }
+
+        public void AddHeader(string name, string value)
+        {
+            Guard.AgainstNull(name, nameof(name));
+            Guard.AgainstNull(value, nameof(value));
+
+            this.Headers.Add(name, new HttpHeader(name, value));
+        }
+
+        public void AddCookie(string name, string value)
+        {
+            Guard.AgainstNull(name, nameof(name));
+            Guard.AgainstNull(value, nameof(value));
+
+            this.Cookies.Add(name, new HttpCookie(name, value));
+        }
 
         protected void PrepareContent(string content, string contentType)
         {
             var contentLength = Encoding.UTF8.GetByteCount(content).ToString();
 
-            this.Headers.Add("Content-Type", contentType);
-            this.Headers.Add("Content-Length", contentLength);
+            this.AddHeader("Content-Type", contentType);
+            this.AddHeader("Content-Length", contentLength);
 
             this.Content = content;
         }

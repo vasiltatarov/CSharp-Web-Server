@@ -14,6 +14,8 @@ namespace MyWebServer.Server.Http
 
         public Dictionary<string, string> Query { get; private set; }
 
+        public IReadOnlyDictionary<string, HttpCookie> Cookies = new Dictionary<string, HttpCookie>();
+
         public HttpHeaderCollection Headers { get; private set; }
 
         public string Body { get; private set; }
